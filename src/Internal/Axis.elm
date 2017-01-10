@@ -26,7 +26,7 @@ import Regex
 type alias Config msg =
     { tickConfig : Tick.Config LabelInfo msg
     , tickValues : ValueConfig
-    , labelView : Label.ViewConfig LabelInfo msg
+    , labelView : Label.View LabelInfo msg
     , labelFormat : Label.FormatConfig LabelInfo
     , labelValues : Maybe (List Value)
     , lineConfig : Line.Config msg
@@ -100,7 +100,7 @@ view ({ scale, toSvgCoords, oppositeAxisCrossings } as meta) ({ lineConfig, tick
                 [ Svg.Attributes.class "elm-plot__axis__labels"
                 , Svg.Attributes.style <| toAnchorStyle anchor orientation
                 ]
-                (Label.view labelView labelFormat (placeLabel meta config axisPosition) (toIndexInfo labelValues))
+                (Label.view labelFormat labelView (viewLabel meta config axisPosition) (toIndexInfo labelValues))
             ]
 
 
@@ -122,11 +122,20 @@ viewAxisLine { style, customAttrs } =
 -- View labels
 
 
-placeLabel : Meta -> Config msg -> Float -> LabelInfo -> List (Svg.Attribute msg)
-placeLabel { toSvgCoords } ({ orientation, anchor } as config) axisPosition info =
-    [ Svg.Attributes.transform <| toTranslate <| addDisplacement (getDisplacement anchor orientation) <| toSvgCoords ( info.value, axisPosition )
-    , Svg.Attributes.class "elm-plot__axis__label"
-    ]
+viewLabel : Meta -> Config msg -> Float -> LabelInfo -> Svg.Svg msg -> Svg.Svg msg
+viewLabel meta config axisPosition info view =
+    Svg.g
+        [ Svg.Attributes.transform (getLabelPosition meta config axisPosition info)
+        , Svg.Attributes.class "elm-plot__axis__label"
+        ]
+        [ view ]
+
+
+getLabelPosition : Meta -> Config msg -> Float -> LabelInfo -> String
+getLabelPosition { toSvgCoords } { orientation, anchor } axisPosition info =
+    toSvgCoords ( info.value, axisPosition )
+        |> addDisplacement (getDisplacement anchor orientation)
+        |> toTranslate
 
 
 

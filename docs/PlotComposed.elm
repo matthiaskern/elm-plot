@@ -93,7 +93,7 @@ view state =
             , Axis.line
                 [ Line.stroke "#b9b9b9" ]
             , Axis.tickDelta 50
-            , Axis.labelView (Label.view labelStyle)
+            , Axis.labelView (Label.view (always labelStyle))
             , Axis.labelFormat (Label.format (\{ value } -> toString value ++ " °C"))
             ]
         , xAxis
@@ -105,9 +105,11 @@ view state =
                 [ Tick.viewDynamic toTickStyle ]
             , Axis.labelView
                 (Label.view
-                    [ Label.fontSize 12
-                    , Label.stroke "#b9b9b9"
-                    ]
+                    (always
+                        [ Label.fontSize 12
+                        , Label.stroke "#b9b9b9"
+                        ]
+                    )
                 )
             , Axis.labelFormat (Label.format (\{ value } -> toString value ++ " x"))
             ]
@@ -118,9 +120,11 @@ view state =
                 [ Tick.viewDynamic toTickStyle ]
             , Axis.labelView
                 (Label.view
-                    [ Label.fontSize 12
-                    , Label.stroke "#b9b9b9"
-                    ]
+                    (always
+                        [ Label.fontSize 12
+                        , Label.stroke "#b9b9b9"
+                        ]
+                    )
                 )
             , Axis.labelFormat
                 (Label.format

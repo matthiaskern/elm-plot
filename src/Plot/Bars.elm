@@ -128,7 +128,7 @@ maxBarWidthPer max config =
           barStyles
           data
 -}
-labelView : Label.ViewConfig LabelInfo msg -> Attribute msg
+labelView : Label.View LabelInfo msg -> Attribute msg
 labelView view config =
     { config | labelView = view }
 

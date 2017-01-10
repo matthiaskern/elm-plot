@@ -27,7 +27,7 @@ type alias Group =
 
 type alias Config msg =
     { stackBy : Orientation
-    , labelView : Label.ViewConfig LabelInfo msg
+    , labelView : Label.View LabelInfo msg
     , labelFormat : Label.FormatConfig LabelInfo
     , maxWidth : MaxWidth
     }
@@ -95,8 +95,8 @@ viewGroup meta config styleConfigs width group =
                 )
             , Svg.g []
                 (Label.view
-                    config.labelView
                     config.labelFormat
+                    config.labelView
                     (\info -> placeLabel width (toCoords info))
                     labelInfos
                 )
@@ -145,11 +145,13 @@ toStackedCoords meta config styleConfigs width group info =
                     )
 
 
-placeLabel : Float -> Point -> List (Svg.Attribute msg)
-placeLabel width ( xSvg, ySvg ) =
-    [ Svg.Attributes.transform (toTranslate ( xSvg + width / 2, ySvg ))
-    , Svg.Attributes.style "text-anchor: middle;"
-    ]
+placeLabel : Float -> Point -> Svg.Svg msg -> Svg.Svg msg
+placeLabel width ( xSvg, ySvg ) label =
+    Svg.g
+        [ Svg.Attributes.transform (toTranslate ( xSvg + width / 2, ySvg ))
+        , Svg.Attributes.style "text-anchor: middle;"
+        ]
+        [ label ]
 
 
 viewBar : Meta -> Float -> Point -> StyleConfig msg -> LabelInfo -> Svg.Svg msg

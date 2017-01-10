@@ -77,7 +77,7 @@ view =
             [ Axis.positionHighest
             , Axis.cleanCrossings
             , Axis.tick [ Tick.view toTickAttrs ]
-            , Axis.labelView (Label.viewDynamic toLabelAttrsY)
+            , Axis.labelView (Label.view toLabelAttrsY)
             , Axis.labelFormat
                 (Label.format
                     (\{ index, value } ->

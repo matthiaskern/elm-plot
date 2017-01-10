@@ -9544,15 +9544,15 @@ var _terezka$elm_plot$Internal_Tick$defaultConfig = {
 	viewConfig: _terezka$elm_plot$Internal_Tick$FromStyle(_terezka$elm_plot$Internal_Tick$defaultStyleConfig)
 };
 
-var _terezka$elm_plot$Internal_Label$defaultView = F2(
-	function (_p0, text) {
-		var _p1 = _p0;
-		var _p2 = A2(
+var _terezka$elm_plot$Internal_Label$defaultView = F3(
+	function (_p1, _p0, text) {
+		var _p2 = _p1;
+		var _p3 = A2(
 			_elm_lang$core$Maybe$withDefault,
 			{ctor: '_Tuple2', _0: 0, _1: 0},
-			_p1.displace);
-		var dx = _p2._0;
-		var dy = _p2._1;
+			_p2.displace);
+		var dx = _p3._0;
+		var dy = _p3._1;
 		var attrs = A2(
 			_elm_lang$core$Basics_ops['++'],
 			{
@@ -9567,19 +9567,19 @@ var _terezka$elm_plot$Internal_Label$defaultView = F2(
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$svg$Svg_Attributes$style(
-						_terezka$elm_plot$Internal_Draw$toStyle(_p1.style)),
+						_terezka$elm_plot$Internal_Draw$toStyle(_p2.style)),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Attributes$class(
 							A2(
 								_elm_lang$core$String$join,
 								' ',
-								{ctor: '::', _0: 'elm-plot__label__default-view', _1: _p1.classes})),
+								{ctor: '::', _0: 'elm-plot__label__default-view', _1: _p2.classes})),
 						_1: {ctor: '[]'}
 					}
 				}
 			},
-			_p1.customAttrs);
+			_p2.customAttrs);
 		return A2(
 			_elm_lang$svg$Svg$text_,
 			attrs,
@@ -9596,77 +9596,26 @@ var _terezka$elm_plot$Internal_Label$defaultView = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _terezka$elm_plot$Internal_Label$viewLabels = F3(
-	function (formatConfig, view, infos) {
-		var _p3 = formatConfig;
-		if (_p3.ctor === 'FromFunc') {
-			return A2(
-				_elm_lang$core$List$map,
-				function (info) {
-					return A2(
-						view,
-						info,
-						_p3._0(info));
-				},
-				infos);
+var _terezka$elm_plot$Internal_Label$toLabelText = F2(
+	function (formatConfig, infos) {
+		var _p4 = formatConfig;
+		if (_p4.ctor === 'FromFunc') {
+			return A2(_elm_lang$core$List$map, _p4._0, infos);
 		} else {
-			return A3(_elm_lang$core$List$map2, view, infos, _p3._0);
+			return _p4._0;
 		}
 	});
 var _terezka$elm_plot$Internal_Label$view = F4(
-	function (viewConfig, formatConfig, toAttributes, infos) {
-		var _p4 = viewConfig;
-		switch (_p4.ctor) {
-			case 'FromStyle':
-				return A3(
-					_terezka$elm_plot$Internal_Label$viewLabels,
-					formatConfig,
-					F2(
-						function (info, text) {
-							return A2(
-								_elm_lang$svg$Svg$g,
-								toAttributes(info),
-								{
-									ctor: '::',
-									_0: A2(_terezka$elm_plot$Internal_Label$defaultView, _p4._0, text),
-									_1: {ctor: '[]'}
-								});
-						}),
-					infos);
-			case 'FromStyleDynamic':
-				return A3(
-					_terezka$elm_plot$Internal_Label$viewLabels,
-					formatConfig,
-					F2(
-						function (info, text) {
-							return A2(
-								_elm_lang$svg$Svg$g,
-								toAttributes(info),
-								{
-									ctor: '::',
-									_0: A2(
-										_terezka$elm_plot$Internal_Label$defaultView,
-										_p4._0(info),
-										text),
-									_1: {ctor: '[]'}
-								});
-						}),
-					infos);
-			default:
-				return A2(
-					_elm_lang$core$List$map,
-					function (info) {
-						return A2(
-							_elm_lang$svg$Svg$g,
-							toAttributes(info),
-							{
-								ctor: '::',
-								_0: _p4._0(info),
-								_1: {ctor: '[]'}
-							});
-					},
-					infos);
-		}
+	function (formatConfig, view, wrapView, infos) {
+		return A3(
+			_elm_lang$core$List$map2,
+			wrapView,
+			infos,
+			A3(
+				_elm_lang$core$List$map2,
+				view,
+				infos,
+				A2(_terezka$elm_plot$Internal_Label$toLabelText, formatConfig, infos)));
 	});
 var _terezka$elm_plot$Internal_Label$defaultStyleConfig = {
 	displace: _elm_lang$core$Maybe$Nothing,
@@ -9674,6 +9623,14 @@ var _terezka$elm_plot$Internal_Label$defaultStyleConfig = {
 	classes: {ctor: '[]'},
 	customAttrs: {ctor: '[]'}
 };
+var _terezka$elm_plot$Internal_Label$toStyleConfig = A2(
+	_elm_lang$core$List$foldl,
+	F2(
+		function (x, y) {
+			return x(y);
+		}),
+	_terezka$elm_plot$Internal_Label$defaultStyleConfig);
+var _terezka$elm_plot$Internal_Label$defaultViewConfig = _terezka$elm_plot$Internal_Label$defaultView(_terezka$elm_plot$Internal_Label$defaultStyleConfig);
 var _terezka$elm_plot$Internal_Label$StyleConfig = F4(
 	function (a, b, c, d) {
 		return {displace: a, style: b, classes: c, customAttrs: d};
@@ -9684,16 +9641,6 @@ var _terezka$elm_plot$Internal_Label$FromList = function (a) {
 var _terezka$elm_plot$Internal_Label$FromFunc = function (a) {
 	return {ctor: 'FromFunc', _0: a};
 };
-var _terezka$elm_plot$Internal_Label$FromCustomView = function (a) {
-	return {ctor: 'FromCustomView', _0: a};
-};
-var _terezka$elm_plot$Internal_Label$FromStyleDynamic = function (a) {
-	return {ctor: 'FromStyleDynamic', _0: a};
-};
-var _terezka$elm_plot$Internal_Label$FromStyle = function (a) {
-	return {ctor: 'FromStyle', _0: a};
-};
-var _terezka$elm_plot$Internal_Label$defaultViewConfig = _terezka$elm_plot$Internal_Label$FromStyle(_terezka$elm_plot$Internal_Label$defaultStyleConfig);
 
 var _terezka$elm_plot$Internal_Line$stdAttributes = F2(
 	function (d, style) {
@@ -9988,25 +9935,36 @@ var _terezka$elm_plot$Internal_Axis$placeTick = F5(
 				_1: {ctor: '[]'}
 			});
 	});
-var _terezka$elm_plot$Internal_Axis$placeLabel = F4(
+var _terezka$elm_plot$Internal_Axis$getLabelPosition = F4(
 	function (_p22, _p21, axisPosition, info) {
 		var _p23 = _p22;
 		var _p24 = _p21;
-		return {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$transform(
-				_terezka$elm_plot$Internal_Draw$toTranslate(
-					A2(
-						_terezka$elm_plot$Internal_Draw$addDisplacement,
-						A2(_terezka$elm_plot$Internal_Axis$getDisplacement, _p24.anchor, _p24.orientation),
-						_p23.toSvgCoords(
-							{ctor: '_Tuple2', _0: info.value, _1: axisPosition})))),
-			_1: {
+		return _terezka$elm_plot$Internal_Draw$toTranslate(
+			A2(
+				_terezka$elm_plot$Internal_Draw$addDisplacement,
+				A2(_terezka$elm_plot$Internal_Axis$getDisplacement, _p24.anchor, _p24.orientation),
+				_p23.toSvgCoords(
+					{ctor: '_Tuple2', _0: info.value, _1: axisPosition})));
+	});
+var _terezka$elm_plot$Internal_Axis$viewLabel = F5(
+	function (meta, config, axisPosition, info, view) {
+		return A2(
+			_elm_lang$svg$Svg$g,
+			{
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$class('elm-plot__axis__label'),
+				_0: _elm_lang$svg$Svg_Attributes$transform(
+					A4(_terezka$elm_plot$Internal_Axis$getLabelPosition, meta, config, axisPosition, info)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$class('elm-plot__axis__label'),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: view,
 				_1: {ctor: '[]'}
-			}
-		};
+			});
 	});
 var _terezka$elm_plot$Internal_Axis$viewAxisLine = function (_p25) {
 	var _p26 = _p25;
@@ -10079,9 +10037,9 @@ var _terezka$elm_plot$Internal_Axis$view = F2(
 							},
 							A4(
 								_terezka$elm_plot$Internal_Label$view,
-								_p30.labelView,
 								_p30.labelFormat,
-								A3(_terezka$elm_plot$Internal_Axis$placeLabel, _p33, _p31, axisPosition),
+								_p30.labelView,
+								A3(_terezka$elm_plot$Internal_Axis$viewLabel, _p33, _p31, axisPosition),
 								_terezka$elm_plot$Internal_Axis$toIndexInfo(labelValues))),
 						_1: {ctor: '[]'}
 					}
@@ -10317,30 +10275,18 @@ var _terezka$elm_plot$Plot_Label$formatFromList = function (format) {
 var _terezka$elm_plot$Plot_Label$format = function (format) {
 	return _terezka$elm_plot$Internal_Label$FromFunc(format);
 };
-var _terezka$elm_plot$Plot_Label$viewCustom = function (view) {
-	return _terezka$elm_plot$Internal_Label$FromCustomView(view);
+var _terezka$elm_plot$Plot_Label$viewCustom = function (toView) {
+	return toView;
 };
-var _terezka$elm_plot$Plot_Label$toStyleConfig = function (styleAttributes) {
-	return A3(
-		_elm_lang$core$List$foldl,
-		F2(
-			function (x, y) {
-				return x(y);
-			}),
-		_terezka$elm_plot$Internal_Label$defaultStyleConfig,
-		styleAttributes);
-};
-var _terezka$elm_plot$Plot_Label$view = function (styles) {
-	return _terezka$elm_plot$Internal_Label$FromStyle(
-		_terezka$elm_plot$Plot_Label$toStyleConfig(styles));
-};
-var _terezka$elm_plot$Plot_Label$viewDynamic = function (toStyles) {
-	return _terezka$elm_plot$Internal_Label$FromStyleDynamic(
-		function (_p0) {
-			return _terezka$elm_plot$Plot_Label$toStyleConfig(
-				toStyles(_p0));
-		});
-};
+var _terezka$elm_plot$Plot_Label$view = F3(
+	function (toStyles, info, text) {
+		return A3(
+			_terezka$elm_plot$Internal_Label$defaultView,
+			_terezka$elm_plot$Internal_Label$toStyleConfig(
+				toStyles(info)),
+			info,
+			text);
+	});
 var _terezka$elm_plot$Plot_Label$customAttrs = F2(
 	function (attrs, config) {
 		return _elm_lang$core$Native_Utils.update(
@@ -10901,20 +10847,27 @@ var _terezka$elm_plot$Internal_Bars$toAutoWidth = F4(
 		}();
 		return (width * _p20.x.length) / _p20.x.range;
 	});
-var _terezka$elm_plot$Internal_Bars$placeLabel = F2(
-	function (width, _p21) {
+var _terezka$elm_plot$Internal_Bars$placeLabel = F3(
+	function (width, _p21, label) {
 		var _p22 = _p21;
-		return {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$transform(
-				_terezka$elm_plot$Internal_Draw$toTranslate(
-					{ctor: '_Tuple2', _0: _p22._0 + (width / 2), _1: _p22._1})),
-			_1: {
+		return A2(
+			_elm_lang$svg$Svg$g,
+			{
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$style('text-anchor: middle;'),
+				_0: _elm_lang$svg$Svg_Attributes$transform(
+					_terezka$elm_plot$Internal_Draw$toTranslate(
+						{ctor: '_Tuple2', _0: _p22._0 + (width / 2), _1: _p22._1})),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$style('text-anchor: middle;'),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: label,
 				_1: {ctor: '[]'}
-			}
-		};
+			});
 	});
 var _terezka$elm_plot$Internal_Bars$toYStackedOffset = F2(
 	function (_p24, _p23) {
@@ -11058,8 +11011,8 @@ var _terezka$elm_plot$Internal_Bars$viewGroup = F5(
 						{ctor: '[]'},
 						A4(
 							_terezka$elm_plot$Internal_Label$view,
-							config.labelView,
 							config.labelFormat,
+							config.labelView,
 							function (info) {
 								return A2(
 									_terezka$elm_plot$Internal_Bars$placeLabel,
@@ -12834,7 +12787,8 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 															_1: {
 																ctor: '::',
 																_0: _terezka$elm_plot$Plot_Axis$labelView(
-																	_terezka$elm_plot$Plot_Label$view(_terezka$elm_plot$PlotComposed$labelStyle)),
+																	_terezka$elm_plot$Plot_Label$view(
+																		_elm_lang$core$Basics$always(_terezka$elm_plot$PlotComposed$labelStyle))),
 																_1: {
 																	ctor: '::',
 																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
@@ -12883,15 +12837,16 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 																ctor: '::',
 																_0: _terezka$elm_plot$Plot_Axis$labelView(
 																	_terezka$elm_plot$Plot_Label$view(
-																		{
-																			ctor: '::',
-																			_0: _terezka$elm_plot$Plot_Label$fontSize(12),
-																			_1: {
+																		_elm_lang$core$Basics$always(
+																			{
 																				ctor: '::',
-																				_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
-																				_1: {ctor: '[]'}
-																			}
-																		})),
+																				_0: _terezka$elm_plot$Plot_Label$fontSize(12),
+																				_1: {
+																					ctor: '::',
+																					_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
+																					_1: {ctor: '[]'}
+																				}
+																			}))),
 																_1: {
 																	ctor: '::',
 																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
@@ -12936,15 +12891,16 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 																ctor: '::',
 																_0: _terezka$elm_plot$Plot_Axis$labelView(
 																	_terezka$elm_plot$Plot_Label$view(
-																		{
-																			ctor: '::',
-																			_0: _terezka$elm_plot$Plot_Label$fontSize(12),
-																			_1: {
+																		_elm_lang$core$Basics$always(
+																			{
 																				ctor: '::',
-																				_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
-																				_1: {ctor: '[]'}
-																			}
-																		})),
+																				_0: _terezka$elm_plot$Plot_Label$fontSize(12),
+																				_1: {
+																					ctor: '::',
+																					_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
+																					_1: {ctor: '[]'}
+																				}
+																			}))),
 																_1: {
 																	ctor: '::',
 																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
@@ -13434,7 +13390,7 @@ var _terezka$elm_plot$PlotTicks$view = A2(
 							_1: {
 								ctor: '::',
 								_0: _terezka$elm_plot$Plot_Axis$labelView(
-									_terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotTicks$toLabelStyle)),
+									_terezka$elm_plot$Plot_Label$view(_terezka$elm_plot$PlotTicks$toLabelStyle)),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -13484,16 +13440,17 @@ var _terezka$elm_plot$PlotBars$view = A2(
 						ctor: '::',
 						_0: _terezka$elm_plot$Plot_Bars$labelView(
 							_terezka$elm_plot$Plot_Label$view(
-								{
-									ctor: '::',
-									_0: _terezka$elm_plot$Plot_Label$displace(
-										{ctor: '_Tuple2', _0: 0, _1: 13}),
-									_1: {
+								_elm_lang$core$Basics$always(
+									{
 										ctor: '::',
-										_0: _terezka$elm_plot$Plot_Label$fontSize(10),
-										_1: {ctor: '[]'}
-									}
-								})),
+										_0: _terezka$elm_plot$Plot_Label$displace(
+											{ctor: '_Tuple2', _0: 0, _1: 13}),
+										_1: {
+											ctor: '::',
+											_0: _terezka$elm_plot$Plot_Label$fontSize(10),
+											_1: {ctor: '[]'}
+										}
+									}))),
 						_1: {
 							ctor: '::',
 							_0: _terezka$elm_plot$Plot_Bars$labelFormat(
@@ -13837,7 +13794,7 @@ var _terezka$elm_plot$PlotSticky$view = A2(
 								_1: {
 									ctor: '::',
 									_0: _terezka$elm_plot$Plot_Axis$labelView(
-										_terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotSticky$toLabelAttrsY)),
+										_terezka$elm_plot$Plot_Label$view(_terezka$elm_plot$PlotSticky$toLabelAttrsY)),
 									_1: {
 										ctor: '::',
 										_0: _terezka$elm_plot$Plot_Axis$labelFormat(

@@ -1,10 +1,9 @@
 module Plot.Label
     exposing
-        ( ViewConfig
+        ( View
         , FormatConfig
         , StyleAttribute
         , view
-        , viewDynamic
         , viewCustom
         , stroke
         , strokeWidth
@@ -27,10 +26,10 @@ module Plot.Label
  Ok, now you can go on!
 
 # Definition
-@docs ViewConfig, FormatConfig
+@docs View, FormatConfig
 
 # View options
-@docs view, viewDynamic, viewCustom
+@docs view, viewCustom
 
 ## Style attributes
 If these attributes do not forfill your needs, try out the viewCustom! If you have
@@ -48,8 +47,8 @@ import Internal.Draw exposing (..)
 
 
 {-| -}
-type alias ViewConfig a msg =
-    Internal.ViewConfig a msg
+type alias View a msg =
+    Internal.View a msg
 
 
 {-| -}
@@ -136,11 +135,6 @@ customAttrs attrs config =
     { config | customAttrs = attrs }
 
 
-toStyleConfig : List (StyleAttribute msg) -> Internal.StyleConfig msg
-toStyleConfig styleAttributes =
-    List.foldl (<|) Internal.defaultStyleConfig styleAttributes
-
-
 {-| Provide a list of style attributes to alter the view of the label.
 
     myYAxis : Plot.Element msg
@@ -157,38 +151,9 @@ toStyleConfig styleAttributes =
  **Note:** If you add another attribute altering the view like `viewDynamic` or `viewCustom` _after_ this attribute,
  then this attribute will have no effect.
 -}
-view : List (StyleAttribute msg) -> ViewConfig a msg
-view styles =
-    Internal.FromStyle (toStyleConfig styles)
-
-
-{-| Alter the view of the label based on the label's value and index (amount of ticks from origin) by
- providing a function returning a list of style attributes.
-
-    toViewStyles : Int -> Float -> List Label.StyleAttribute a
-    toViewStyles index value =
-        if isOdd index then
-            [ Label.classes [ "label--odd" ]
-            , Label.displace ( 12, 0 )
-            ]
-        else
-            [ Label.classes [ "label--even" ]
-            , Label.displace ( 16, 0 )
-            ]
-
-    myYAxis : Plot.Element msg
-    myYAxis =
-        Plot.yAxis
-            [ Axis.label
-                [ Label.viewDynamic toViewStyles ]
-            ]
-
- **Note:** If you add another attribute altering the view like `view` or `viewCustom` _after_ this attribute,
- then this attribute will have no effect.
--}
-viewDynamic : (a -> List (StyleAttribute msg)) -> ViewConfig a msg
-viewDynamic toStyles =
-    Internal.FromStyleDynamic (toStyleConfig << toStyles)
+view : (a -> List (StyleAttribute msg)) -> View a msg
+view toStyles =
+    (\info text -> Internal.defaultView (Internal.toStyleConfig (toStyles info)) info text)
 
 
 {-| Define your own view for the labels. Your view will be passed label's value and index (amount of ticks from origin).
@@ -211,9 +176,9 @@ viewDynamic toStyles =
  **Note:** If you add another attribute altering the view like `view` or `viewDynamic` _after_ this attribute,
  then this attribute will have no effect.
 -}
-viewCustom : (a -> Svg.Svg msg) -> ViewConfig a msg
-viewCustom view =
-    Internal.FromCustomView view
+viewCustom : (a -> String -> Svg.Svg msg) -> View a msg
+viewCustom toView =
+    toView
 
 
 {-| Format the label based on its value and index.

@@ -82,7 +82,7 @@ view =
                             toString value ++ " s"
                     )
                 )
-            , Axis.labelView (Label.viewDynamic toLabelStyle)
+            , Axis.labelView (Label.view toLabelStyle)
             ]
         ]
 

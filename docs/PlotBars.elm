@@ -45,9 +45,11 @@ view =
             , Bars.stackByY
             , Bars.labelView
                 (Label.view
-                    [ Label.displace ( 0, 13 )
-                    , Label.fontSize 10
-                    ]
+                    (always
+                        [ Label.displace ( 0, 13 )
+                        , Label.fontSize 10
+                        ]
+                    )
                 )
             , Bars.labelFormat (Label.formatFromList [ "A", "B", "C" ])
             ]

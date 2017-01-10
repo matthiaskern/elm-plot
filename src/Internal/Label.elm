@@ -1,10 +1,12 @@
 module Internal.Label
     exposing
-        ( ViewConfig(..)
-        , StyleConfig
+        ( StyleConfig
         , FormatConfig(..)
+        , View
+        , ViewWrap
         , defaultViewConfig
         , defaultStyleConfig
+        , toStyleConfig
         , view
         , defaultView
         )
@@ -28,15 +30,17 @@ type FormatConfig a
     | FromList (List String)
 
 
-type ViewConfig a msg
-    = FromStyle (StyleConfig msg)
-    | FromStyleDynamic (a -> StyleConfig msg)
-    | FromCustomView (a -> Svg.Svg msg)
+type alias View a msg =
+    a -> String -> Svg.Svg msg
 
 
-defaultViewConfig : ViewConfig a msg
+type alias ViewWrap a msg =
+    a -> Svg.Svg msg -> Svg.Svg msg
+
+
+defaultViewConfig : View a msg
 defaultViewConfig =
-    FromStyle defaultStyleConfig
+    defaultView defaultStyleConfig
 
 
 defaultStyleConfig : StyleConfig msg
@@ -48,31 +52,30 @@ defaultStyleConfig =
     }
 
 
-view : ViewConfig a msg -> FormatConfig a -> (a -> List (Svg.Attribute msg)) -> List a -> List (Svg.Svg msg)
-view viewConfig formatConfig toAttributes infos =
-    case viewConfig of
-        FromStyle styles ->
-            viewLabels formatConfig (\info text -> Svg.g (toAttributes info) [ defaultView styles text ]) infos
-
-        FromStyleDynamic toStyleAttributes ->
-            viewLabels formatConfig (\info text -> Svg.g (toAttributes info) [ defaultView (toStyleAttributes info) text ]) infos
-
-        FromCustomView view ->
-            List.map (\info -> Svg.g (toAttributes info) [ view info ]) infos
+toStyleConfig : List (StyleConfig msg -> StyleConfig msg) -> StyleConfig msg
+toStyleConfig =
+    List.foldl (<|) defaultStyleConfig
 
 
-viewLabels : FormatConfig a -> (a -> String -> Svg.Svg msg) -> List a -> List (Svg.Svg msg)
-viewLabels formatConfig view infos =
+view : FormatConfig a -> View a msg -> ViewWrap a msg -> List a -> List (Svg.Svg msg)
+view formatConfig view wrapView infos =
+    toLabelText formatConfig infos
+        |> List.map2 view infos
+        |> List.map2 wrapView infos
+
+
+toLabelText : FormatConfig a -> List a -> List String
+toLabelText formatConfig infos =
     case formatConfig of
         FromFunc formatter ->
-            List.map (\info -> view info (formatter info)) infos
+            List.map formatter infos
 
         FromList texts ->
-            List.map2 view infos texts
+            texts
 
 
-defaultView : StyleConfig msg -> String -> Svg.Svg msg
-defaultView { displace, style, classes, customAttrs } text =
+defaultView : StyleConfig msg -> View a msg
+defaultView { displace, style, classes, customAttrs } _ text =
     let
         ( dx, dy ) =
             Maybe.withDefault ( 0, 0 ) displace
