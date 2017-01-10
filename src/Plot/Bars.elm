@@ -8,7 +8,8 @@ module Plot.Bars
         , stackByY
         , maxBarWidth
         , maxBarWidthPer
-        , label
+        , labelView
+        , labelFormat
         , fill
         , opacity
         , customAttrs
@@ -47,7 +48,7 @@ module Plot.Bars
 @docs maxBarWidth, maxBarWidthPer, stackByY
 
 ## Labels
-@docs LabelInfo, label
+@docs LabelInfo, labelView, labelFormat
 
 # Individual bar attributes
   These are the attributes which can be passed in the list of bar styles in the
@@ -72,7 +73,6 @@ module Plot.Bars
 import Svg
 import Internal.Types exposing (Style, Point, Orientation(..), MaxWidth(..), Value, IndexedInfo)
 import Internal.Bars as Internal
-import Internal.Label as LabelInternal
 import Plot.Label as Label
 
 
@@ -128,9 +128,15 @@ maxBarWidthPer max config =
           barStyles
           data
 -}
-label : List (Label.Attribute LabelInfo msg) -> Attribute msg
-label attributes config =
-    { config | labelConfig = List.foldl (<|) LabelInternal.defaultConfig attributes }
+labelView : Label.ViewConfig LabelInfo msg -> Attribute msg
+labelView view config =
+    { config | labelView = view }
+
+
+{-| -}
+labelFormat : Label.FormatConfig LabelInfo -> Attribute msg
+labelFormat formatter config =
+    { config | labelFormat = formatter }
 
 
 {-| By default your bars are stacked by x. If you want to stack them y, add this attribute.

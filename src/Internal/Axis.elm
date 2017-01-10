@@ -26,7 +26,8 @@ import Regex
 type alias Config msg =
     { tickConfig : Tick.Config LabelInfo msg
     , tickValues : ValueConfig
-    , labelConfig : Label.Config LabelInfo msg
+    , labelView : Label.ViewConfig LabelInfo msg
+    , labelFormat : Label.FormatConfig LabelInfo
     , labelValues : Maybe (List Value)
     , lineConfig : Line.Config msg
     , orientation : Orientation
@@ -60,7 +61,8 @@ defaultConfigX : Config msg
 defaultConfigX =
     { tickConfig = Tick.defaultConfig
     , tickValues = AutoValues
-    , labelConfig = Label.toDefaultConfig (.value >> toString)
+    , labelView = Label.defaultViewConfig
+    , labelFormat = Label.FromFunc (.value >> toString)
     , labelValues = Nothing
     , lineConfig = Line.defaultConfig
     , orientation = X
@@ -77,7 +79,7 @@ defaultConfigY =
 
 
 view : Meta -> Config msg -> Svg.Svg msg
-view ({ scale, toSvgCoords, oppositeAxisCrossings } as meta) ({ lineConfig, tickConfig, labelConfig, orientation, cleanCrossings, position, anchor, classes } as config) =
+view ({ scale, toSvgCoords, oppositeAxisCrossings } as meta) ({ lineConfig, tickConfig, labelView, labelFormat, orientation, cleanCrossings, position, anchor, classes } as config) =
     let
         tickValues =
             toTickValues meta config
@@ -98,7 +100,7 @@ view ({ scale, toSvgCoords, oppositeAxisCrossings } as meta) ({ lineConfig, tick
                 [ Svg.Attributes.class "elm-plot__axis__labels"
                 , Svg.Attributes.style <| toAnchorStyle anchor orientation
                 ]
-                (Label.view labelConfig (placeLabel meta config axisPosition) (toIndexInfo labelValues))
+                (Label.view labelView labelFormat (placeLabel meta config axisPosition) (toIndexInfo labelValues))
             ]
 
 

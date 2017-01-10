@@ -73,16 +73,16 @@ view =
         , xAxis
             [ Axis.line [ Line.stroke axisColor ]
             , Axis.tick [ Tick.viewDynamic toTickStyle ]
-            , Axis.label
-                [ Label.format
+            , Axis.labelFormat
+                (Label.format
                     (\{ index, value } ->
                         if isOdd index then
                             ""
                         else
                             toString value ++ " s"
                     )
-                , Label.viewDynamic toLabelStyle
-                ]
+                )
+            , Axis.labelView (Label.viewDynamic toLabelStyle)
             ]
         ]
 

@@ -43,13 +43,13 @@ view =
         [ bars
             [ Bars.maxBarWidth 30
             , Bars.stackByY
-            , Bars.label
-                [ Label.formatFromList [ "A", "B", "C" ]
-                , Label.view
+            , Bars.labelView
+                (Label.view
                     [ Label.displace ( 0, 13 )
                     , Label.fontSize 10
                     ]
-                ]
+                )
+            , Bars.labelFormat (Label.formatFromList [ "A", "B", "C" ])
             ]
             [ [ Bars.fill Common.blueFill ]
             , [ Bars.fill Common.skinFill ]

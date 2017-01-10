@@ -1,11 +1,9 @@
 module Internal.Label
     exposing
         ( ViewConfig(..)
-        , Config
         , StyleConfig
         , FormatConfig(..)
-        , defaultConfig
-        , toDefaultConfig
+        , defaultViewConfig
         , defaultStyleConfig
         , view
         , defaultView
@@ -15,12 +13,6 @@ import Internal.Types exposing (Point, Style, Orientation(..), Scale, Meta, Hint
 import Internal.Draw as Draw exposing (..)
 import Svg
 import Svg.Attributes
-
-
-type alias Config a msg =
-    { viewConfig : ViewConfig a msg
-    , format : FormatConfig a
-    }
 
 
 type alias StyleConfig msg =
@@ -42,11 +34,9 @@ type ViewConfig a msg
     | FromCustomView (a -> Svg.Svg msg)
 
 
-defaultConfig : Config a msg
-defaultConfig =
-    { viewConfig = FromStyle defaultStyleConfig
-    , format = FromFunc (always "")
-    }
+defaultViewConfig : ViewConfig a msg
+defaultViewConfig =
+    FromStyle defaultStyleConfig
 
 
 defaultStyleConfig : StyleConfig msg
@@ -58,29 +48,22 @@ defaultStyleConfig =
     }
 
 
-toDefaultConfig : (a -> String) -> Config a msg
-toDefaultConfig format =
-    { viewConfig = FromStyle defaultStyleConfig
-    , format = FromFunc format
-    }
-
-
-view : Config a msg -> (a -> List (Svg.Attribute msg)) -> List a -> List (Svg.Svg msg)
-view config toAttributes infos =
-    case config.viewConfig of
+view : ViewConfig a msg -> FormatConfig a -> (a -> List (Svg.Attribute msg)) -> List a -> List (Svg.Svg msg)
+view viewConfig formatConfig toAttributes infos =
+    case viewConfig of
         FromStyle styles ->
-            viewLabels config (\info text -> Svg.g (toAttributes info) [ defaultView styles text ]) infos
+            viewLabels formatConfig (\info text -> Svg.g (toAttributes info) [ defaultView styles text ]) infos
 
         FromStyleDynamic toStyleAttributes ->
-            viewLabels config (\info text -> Svg.g (toAttributes info) [ defaultView (toStyleAttributes info) text ]) infos
+            viewLabels formatConfig (\info text -> Svg.g (toAttributes info) [ defaultView (toStyleAttributes info) text ]) infos
 
         FromCustomView view ->
             List.map (\info -> Svg.g (toAttributes info) [ view info ]) infos
 
 
-viewLabels : Config a msg -> (a -> String -> Svg.Svg msg) -> List a -> List (Svg.Svg msg)
-viewLabels config view infos =
-    case config.format of
+viewLabels : FormatConfig a -> (a -> String -> Svg.Svg msg) -> List a -> List (Svg.Svg msg)
+viewLabels formatConfig view infos =
+    case formatConfig of
         FromFunc formatter ->
             List.map (\info -> view info (formatter info)) infos
 

@@ -27,7 +27,8 @@ type alias Group =
 
 type alias Config msg =
     { stackBy : Orientation
-    , labelConfig : Label.Config LabelInfo msg
+    , labelView : Label.ViewConfig LabelInfo msg
+    , labelFormat : Label.FormatConfig LabelInfo
     , maxWidth : MaxWidth
     }
 
@@ -48,7 +49,8 @@ type alias LabelInfo =
 defaultConfig : Config msg
 defaultConfig =
     { stackBy = X
-    , labelConfig = Label.defaultConfig
+    , labelView = Label.defaultViewConfig
+    , labelFormat = Label.FromFunc (always "")
     , maxWidth = Percentage 100
     }
 
@@ -93,7 +95,8 @@ viewGroup meta config styleConfigs width group =
                 )
             , Svg.g []
                 (Label.view
-                    config.labelConfig
+                    config.labelView
+                    config.labelFormat
                     (\info -> placeLabel width (toCoords info))
                     labelInfos
                 )

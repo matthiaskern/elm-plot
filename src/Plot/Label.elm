@@ -1,6 +1,7 @@
 module Plot.Label
     exposing
-        ( Attribute
+        ( ViewConfig
+        , FormatConfig
         , StyleAttribute
         , view
         , viewDynamic
@@ -26,7 +27,7 @@ module Plot.Label
  Ok, now you can go on!
 
 # Definition
-@docs Attribute
+@docs ViewConfig, FormatConfig
 
 # View options
 @docs view, viewDynamic, viewCustom
@@ -47,8 +48,13 @@ import Internal.Draw exposing (..)
 
 
 {-| -}
-type alias Attribute a msg =
-    Internal.Config a msg -> Internal.Config a msg
+type alias ViewConfig a msg =
+    Internal.ViewConfig a msg
+
+
+{-| -}
+type alias FormatConfig a =
+    Internal.FormatConfig a
 
 
 {-| -}
@@ -151,9 +157,9 @@ toStyleConfig styleAttributes =
  **Note:** If you add another attribute altering the view like `viewDynamic` or `viewCustom` _after_ this attribute,
  then this attribute will have no effect.
 -}
-view : List (StyleAttribute msg) -> Attribute a msg
-view styles config =
-    { config | viewConfig = Internal.FromStyle (toStyleConfig styles) }
+view : List (StyleAttribute msg) -> ViewConfig a msg
+view styles =
+    Internal.FromStyle (toStyleConfig styles)
 
 
 {-| Alter the view of the label based on the label's value and index (amount of ticks from origin) by
@@ -180,9 +186,9 @@ view styles config =
  **Note:** If you add another attribute altering the view like `view` or `viewCustom` _after_ this attribute,
  then this attribute will have no effect.
 -}
-viewDynamic : (a -> List (StyleAttribute msg)) -> Attribute a msg
-viewDynamic toStyles config =
-    { config | viewConfig = Internal.FromStyleDynamic (toStyleConfig << toStyles) }
+viewDynamic : (a -> List (StyleAttribute msg)) -> ViewConfig a msg
+viewDynamic toStyles =
+    Internal.FromStyleDynamic (toStyleConfig << toStyles)
 
 
 {-| Define your own view for the labels. Your view will be passed label's value and index (amount of ticks from origin).
@@ -205,9 +211,9 @@ viewDynamic toStyles config =
  **Note:** If you add another attribute altering the view like `view` or `viewDynamic` _after_ this attribute,
  then this attribute will have no effect.
 -}
-viewCustom : (a -> Svg.Svg msg) -> Attribute a msg
-viewCustom view config =
-    { config | viewConfig = Internal.FromCustomView view }
+viewCustom : (a -> Svg.Svg msg) -> ViewConfig a msg
+viewCustom view =
+    Internal.FromCustomView view
 
 
 {-| Format the label based on its value and index.
@@ -226,12 +232,12 @@ viewCustom view config =
                 [ Label.format formatter ]
             ]
 -}
-format : (a -> String) -> Attribute a msg
-format format config =
-    { config | format = Internal.FromFunc format }
+format : (a -> String) -> FormatConfig a
+format format =
+    Internal.FromFunc format
 
 
 {-| -}
-formatFromList : List String -> Attribute a msg
-formatFromList format config =
-    { config | format = Internal.FromList format }
+formatFromList : List String -> FormatConfig a
+formatFromList format =
+    Internal.FromList format

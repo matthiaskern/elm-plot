@@ -70,38 +70,37 @@ view =
             [ Axis.tick
                 [ Tick.view toTickAttrs ]
             , Axis.tickValues [ 3, 6 ]
-            , Axis.label
-                [ Label.format (\{ value } -> toString value ++ " ms") ]
+            , Axis.labelFormat (Label.format (\{ value } -> toString value ++ " ms"))
             , Axis.cleanCrossings
             ]
         , yAxis
             [ Axis.positionHighest
             , Axis.cleanCrossings
             , Axis.tick [ Tick.view toTickAttrs ]
-            , Axis.label
-                [ Label.viewDynamic toLabelAttrsY
-                , Label.format
+            , Axis.labelView (Label.viewDynamic toLabelAttrsY)
+            , Axis.labelFormat
+                (Label.format
                     (\{ index, value } ->
                         if not <| isOdd index then
                             ""
                         else
                             toString (value * 10) ++ " x"
                     )
-                ]
+                )
             ]
         , yAxis
             [ Axis.positionLowest
             , Axis.cleanCrossings
             , Axis.anchorInside
-            , Axis.label
-                [ Label.format
+            , Axis.labelFormat
+                (Label.format
                     (\{ index, value } ->
                         if isOdd index then
                             ""
                         else
                             toString (value / 5) ++ "k"
                     )
-                ]
+                )
             ]
         ]
 

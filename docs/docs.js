@@ -9597,8 +9597,8 @@ var _terezka$elm_plot$Internal_Label$defaultView = F2(
 			});
 	});
 var _terezka$elm_plot$Internal_Label$viewLabels = F3(
-	function (config, view, infos) {
-		var _p3 = config.format;
+	function (formatConfig, view, infos) {
+		var _p3 = formatConfig;
 		if (_p3.ctor === 'FromFunc') {
 			return A2(
 				_elm_lang$core$List$map,
@@ -9613,14 +9613,14 @@ var _terezka$elm_plot$Internal_Label$viewLabels = F3(
 			return A3(_elm_lang$core$List$map2, view, infos, _p3._0);
 		}
 	});
-var _terezka$elm_plot$Internal_Label$view = F3(
-	function (config, toAttributes, infos) {
-		var _p4 = config.viewConfig;
+var _terezka$elm_plot$Internal_Label$view = F4(
+	function (viewConfig, formatConfig, toAttributes, infos) {
+		var _p4 = viewConfig;
 		switch (_p4.ctor) {
 			case 'FromStyle':
 				return A3(
 					_terezka$elm_plot$Internal_Label$viewLabels,
-					config,
+					formatConfig,
 					F2(
 						function (info, text) {
 							return A2(
@@ -9636,7 +9636,7 @@ var _terezka$elm_plot$Internal_Label$view = F3(
 			case 'FromStyleDynamic':
 				return A3(
 					_terezka$elm_plot$Internal_Label$viewLabels,
-					config,
+					formatConfig,
 					F2(
 						function (info, text) {
 							return A2(
@@ -9674,10 +9674,6 @@ var _terezka$elm_plot$Internal_Label$defaultStyleConfig = {
 	classes: {ctor: '[]'},
 	customAttrs: {ctor: '[]'}
 };
-var _terezka$elm_plot$Internal_Label$Config = F2(
-	function (a, b) {
-		return {viewConfig: a, format: b};
-	});
 var _terezka$elm_plot$Internal_Label$StyleConfig = F4(
 	function (a, b, c, d) {
 		return {displace: a, style: b, classes: c, customAttrs: d};
@@ -9697,17 +9693,7 @@ var _terezka$elm_plot$Internal_Label$FromStyleDynamic = function (a) {
 var _terezka$elm_plot$Internal_Label$FromStyle = function (a) {
 	return {ctor: 'FromStyle', _0: a};
 };
-var _terezka$elm_plot$Internal_Label$defaultConfig = {
-	viewConfig: _terezka$elm_plot$Internal_Label$FromStyle(_terezka$elm_plot$Internal_Label$defaultStyleConfig),
-	format: _terezka$elm_plot$Internal_Label$FromFunc(
-		_elm_lang$core$Basics$always(''))
-};
-var _terezka$elm_plot$Internal_Label$toDefaultConfig = function (format) {
-	return {
-		viewConfig: _terezka$elm_plot$Internal_Label$FromStyle(_terezka$elm_plot$Internal_Label$defaultStyleConfig),
-		format: _terezka$elm_plot$Internal_Label$FromFunc(format)
-	};
-};
+var _terezka$elm_plot$Internal_Label$defaultViewConfig = _terezka$elm_plot$Internal_Label$FromStyle(_terezka$elm_plot$Internal_Label$defaultStyleConfig);
 
 var _terezka$elm_plot$Internal_Line$stdAttributes = F2(
 	function (d, style) {
@@ -10091,9 +10077,10 @@ var _terezka$elm_plot$Internal_Axis$view = F2(
 									_1: {ctor: '[]'}
 								}
 							},
-							A3(
+							A4(
 								_terezka$elm_plot$Internal_Label$view,
-								_p30.labelConfig,
+								_p30.labelView,
+								_p30.labelFormat,
 								A3(_terezka$elm_plot$Internal_Axis$placeLabel, _p33, _p31, axisPosition),
 								_terezka$elm_plot$Internal_Axis$toIndexInfo(labelValues))),
 						_1: {ctor: '[]'}
@@ -10111,7 +10098,9 @@ var _terezka$elm_plot$Internal_Axis$Config = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {tickConfig: a, tickValues: b, labelConfig: c, labelValues: d, lineConfig: e, orientation: f, anchor: g, cleanCrossings: h, position: i, classes: j};
+										return function (k) {
+											return {tickConfig: a, tickValues: b, labelView: c, labelFormat: d, labelValues: e, lineConfig: f, orientation: g, anchor: h, cleanCrossings: i, position: j, classes: k};
+										};
 									};
 								};
 							};
@@ -10142,7 +10131,8 @@ var _terezka$elm_plot$Internal_Axis$AutoValues = {ctor: 'AutoValues'};
 var _terezka$elm_plot$Internal_Axis$defaultConfigX = {
 	tickConfig: _terezka$elm_plot$Internal_Tick$defaultConfig,
 	tickValues: _terezka$elm_plot$Internal_Axis$AutoValues,
-	labelConfig: _terezka$elm_plot$Internal_Label$toDefaultConfig(
+	labelView: _terezka$elm_plot$Internal_Label$defaultViewConfig,
+	labelFormat: _terezka$elm_plot$Internal_Label$FromFunc(
 		function (_p34) {
 			return _elm_lang$core$Basics$toString(
 				function (_) {
@@ -10321,30 +10311,15 @@ var _terezka$elm_plot$Plot_Tick$length = F2(
 			{length: length});
 	});
 
-var _terezka$elm_plot$Plot_Label$formatFromList = F2(
-	function (format, config) {
-		return _elm_lang$core$Native_Utils.update(
-			config,
-			{
-				format: _terezka$elm_plot$Internal_Label$FromList(format)
-			});
-	});
-var _terezka$elm_plot$Plot_Label$format = F2(
-	function (format, config) {
-		return _elm_lang$core$Native_Utils.update(
-			config,
-			{
-				format: _terezka$elm_plot$Internal_Label$FromFunc(format)
-			});
-	});
-var _terezka$elm_plot$Plot_Label$viewCustom = F2(
-	function (view, config) {
-		return _elm_lang$core$Native_Utils.update(
-			config,
-			{
-				viewConfig: _terezka$elm_plot$Internal_Label$FromCustomView(view)
-			});
-	});
+var _terezka$elm_plot$Plot_Label$formatFromList = function (format) {
+	return _terezka$elm_plot$Internal_Label$FromList(format);
+};
+var _terezka$elm_plot$Plot_Label$format = function (format) {
+	return _terezka$elm_plot$Internal_Label$FromFunc(format);
+};
+var _terezka$elm_plot$Plot_Label$viewCustom = function (view) {
+	return _terezka$elm_plot$Internal_Label$FromCustomView(view);
+};
 var _terezka$elm_plot$Plot_Label$toStyleConfig = function (styleAttributes) {
 	return A3(
 		_elm_lang$core$List$foldl,
@@ -10355,27 +10330,17 @@ var _terezka$elm_plot$Plot_Label$toStyleConfig = function (styleAttributes) {
 		_terezka$elm_plot$Internal_Label$defaultStyleConfig,
 		styleAttributes);
 };
-var _terezka$elm_plot$Plot_Label$view = F2(
-	function (styles, config) {
-		return _elm_lang$core$Native_Utils.update(
-			config,
-			{
-				viewConfig: _terezka$elm_plot$Internal_Label$FromStyle(
-					_terezka$elm_plot$Plot_Label$toStyleConfig(styles))
-			});
-	});
-var _terezka$elm_plot$Plot_Label$viewDynamic = F2(
-	function (toStyles, config) {
-		return _elm_lang$core$Native_Utils.update(
-			config,
-			{
-				viewConfig: _terezka$elm_plot$Internal_Label$FromStyleDynamic(
-					function (_p0) {
-						return _terezka$elm_plot$Plot_Label$toStyleConfig(
-							toStyles(_p0));
-					})
-			});
-	});
+var _terezka$elm_plot$Plot_Label$view = function (styles) {
+	return _terezka$elm_plot$Internal_Label$FromStyle(
+		_terezka$elm_plot$Plot_Label$toStyleConfig(styles));
+};
+var _terezka$elm_plot$Plot_Label$viewDynamic = function (toStyles) {
+	return _terezka$elm_plot$Internal_Label$FromStyleDynamic(
+		function (_p0) {
+			return _terezka$elm_plot$Plot_Label$toStyleConfig(
+				toStyles(_p0));
+		});
+};
 var _terezka$elm_plot$Plot_Label$customAttrs = F2(
 	function (attrs, config) {
 		return _elm_lang$core$Native_Utils.update(
@@ -10493,20 +10458,17 @@ var _terezka$elm_plot$Plot_Axis$labelValues = F2(
 				labelValues: _elm_lang$core$Maybe$Just(values)
 			});
 	});
-var _terezka$elm_plot$Plot_Axis$label = F2(
-	function (attributes, config) {
+var _terezka$elm_plot$Plot_Axis$labelFormat = F2(
+	function (formatter, config) {
 		return _elm_lang$core$Native_Utils.update(
 			config,
-			{
-				labelConfig: A3(
-					_elm_lang$core$List$foldl,
-					F2(
-						function (x, y) {
-							return x(y);
-						}),
-					_terezka$elm_plot$Internal_Label$defaultConfig,
-					attributes)
-			});
+			{labelFormat: formatter});
+	});
+var _terezka$elm_plot$Plot_Axis$labelView = F2(
+	function (view, config) {
+		return _elm_lang$core$Native_Utils.update(
+			config,
+			{labelView: view});
 	});
 var _terezka$elm_plot$Plot_Axis$tick = F2(
 	function (attributes, config) {
@@ -11094,9 +11056,10 @@ var _terezka$elm_plot$Internal_Bars$viewGroup = F5(
 					_0: A2(
 						_elm_lang$svg$Svg$g,
 						{ctor: '[]'},
-						A3(
+						A4(
 							_terezka$elm_plot$Internal_Label$view,
-							config.labelConfig,
+							config.labelView,
+							config.labelFormat,
 							function (info) {
 								return A2(
 									_terezka$elm_plot$Internal_Bars$placeLabel,
@@ -11133,16 +11096,18 @@ var _terezka$elm_plot$Internal_Bars$defaultStyleConfig = {
 };
 var _terezka$elm_plot$Internal_Bars$defaultConfig = {
 	stackBy: _terezka$elm_plot$Internal_Types$X,
-	labelConfig: _terezka$elm_plot$Internal_Label$defaultConfig,
+	labelView: _terezka$elm_plot$Internal_Label$defaultViewConfig,
+	labelFormat: _terezka$elm_plot$Internal_Label$FromFunc(
+		_elm_lang$core$Basics$always('')),
 	maxWidth: _terezka$elm_plot$Internal_Types$Percentage(100)
 };
 var _terezka$elm_plot$Internal_Bars$Group = F2(
 	function (a, b) {
 		return {xValue: a, yValues: b};
 	});
-var _terezka$elm_plot$Internal_Bars$Config = F3(
-	function (a, b, c) {
-		return {stackBy: a, labelConfig: b, maxWidth: c};
+var _terezka$elm_plot$Internal_Bars$Config = F4(
+	function (a, b, c, d) {
+		return {stackBy: a, labelView: b, labelFormat: c, maxWidth: d};
 	});
 var _terezka$elm_plot$Internal_Bars$StyleConfig = F2(
 	function (a, b) {
@@ -11215,20 +11180,17 @@ var _terezka$elm_plot$Plot_Bars$stackByY = function (config) {
 		config,
 		{stackBy: _terezka$elm_plot$Internal_Types$Y});
 };
-var _terezka$elm_plot$Plot_Bars$label = F2(
-	function (attributes, config) {
+var _terezka$elm_plot$Plot_Bars$labelFormat = F2(
+	function (formatter, config) {
 		return _elm_lang$core$Native_Utils.update(
 			config,
-			{
-				labelConfig: A3(
-					_elm_lang$core$List$foldl,
-					F2(
-						function (x, y) {
-							return x(y);
-						}),
-					_terezka$elm_plot$Internal_Label$defaultConfig,
-					attributes)
-			});
+			{labelFormat: formatter});
+	});
+var _terezka$elm_plot$Plot_Bars$labelView = F2(
+	function (view, config) {
+		return _elm_lang$core$Native_Utils.update(
+			config,
+			{labelView: view});
 	});
 var _terezka$elm_plot$Plot_Bars$maxBarWidthPer = F2(
 	function (max, config) {
@@ -12871,24 +12833,21 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 															_0: _terezka$elm_plot$Plot_Axis$tickDelta(50),
 															_1: {
 																ctor: '::',
-																_0: _terezka$elm_plot$Plot_Axis$label(
-																	{
-																		ctor: '::',
-																		_0: _terezka$elm_plot$Plot_Label$view(_terezka$elm_plot$PlotComposed$labelStyle),
-																		_1: {
-																			ctor: '::',
-																			_0: _terezka$elm_plot$Plot_Label$format(
-																				function (_p8) {
-																					var _p9 = _p8;
-																					return A2(
-																						_elm_lang$core$Basics_ops['++'],
-																						_elm_lang$core$Basics$toString(_p9.value),
-																						' °C');
-																				}),
-																			_1: {ctor: '[]'}
-																		}
-																	}),
-																_1: {ctor: '[]'}
+																_0: _terezka$elm_plot$Plot_Axis$labelView(
+																	_terezka$elm_plot$Plot_Label$view(_terezka$elm_plot$PlotComposed$labelStyle)),
+																_1: {
+																	ctor: '::',
+																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+																		_terezka$elm_plot$Plot_Label$format(
+																			function (_p8) {
+																				var _p9 = _p8;
+																				return A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(_p9.value),
+																					' °C');
+																			})),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
@@ -12922,33 +12881,30 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 																}),
 															_1: {
 																ctor: '::',
-																_0: _terezka$elm_plot$Plot_Axis$label(
-																	{
-																		ctor: '::',
-																		_0: _terezka$elm_plot$Plot_Label$view(
-																			{
-																				ctor: '::',
-																				_0: _terezka$elm_plot$Plot_Label$fontSize(12),
-																				_1: {
-																					ctor: '::',
-																					_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
-																					_1: {ctor: '[]'}
-																				}
-																			}),
-																		_1: {
+																_0: _terezka$elm_plot$Plot_Axis$labelView(
+																	_terezka$elm_plot$Plot_Label$view(
+																		{
 																			ctor: '::',
-																			_0: _terezka$elm_plot$Plot_Label$format(
-																				function (_p10) {
-																					var _p11 = _p10;
-																					return A2(
-																						_elm_lang$core$Basics_ops['++'],
-																						_elm_lang$core$Basics$toString(_p11.value),
-																						' x');
-																				}),
-																			_1: {ctor: '[]'}
-																		}
-																	}),
-																_1: {ctor: '[]'}
+																			_0: _terezka$elm_plot$Plot_Label$fontSize(12),
+																			_1: {
+																				ctor: '::',
+																				_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
+																				_1: {ctor: '[]'}
+																			}
+																		})),
+																_1: {
+																	ctor: '::',
+																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+																		_terezka$elm_plot$Plot_Label$format(
+																			function (_p10) {
+																				var _p11 = _p10;
+																				return A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(_p11.value),
+																					' x');
+																			})),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
@@ -12978,33 +12934,30 @@ var _terezka$elm_plot$PlotComposed$view = function (state) {
 																}),
 															_1: {
 																ctor: '::',
-																_0: _terezka$elm_plot$Plot_Axis$label(
-																	{
-																		ctor: '::',
-																		_0: _terezka$elm_plot$Plot_Label$view(
-																			{
-																				ctor: '::',
-																				_0: _terezka$elm_plot$Plot_Label$fontSize(12),
-																				_1: {
-																					ctor: '::',
-																					_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
-																					_1: {ctor: '[]'}
-																				}
-																			}),
-																		_1: {
+																_0: _terezka$elm_plot$Plot_Axis$labelView(
+																	_terezka$elm_plot$Plot_Label$view(
+																		{
 																			ctor: '::',
-																			_0: _terezka$elm_plot$Plot_Label$format(
-																				function (_p12) {
-																					var _p13 = _p12;
-																					return _terezka$elm_plot$PlotComposed$isOdd(_p13.index) ? '' : A2(
-																						_elm_lang$core$Basics_ops['++'],
-																						_elm_lang$core$Basics$toString(_p13.value),
-																						' t');
-																				}),
-																			_1: {ctor: '[]'}
-																		}
-																	}),
-																_1: {ctor: '[]'}
+																			_0: _terezka$elm_plot$Plot_Label$fontSize(12),
+																			_1: {
+																				ctor: '::',
+																				_0: _terezka$elm_plot$Plot_Label$stroke('#b9b9b9'),
+																				_1: {ctor: '[]'}
+																			}
+																		})),
+																_1: {
+																	ctor: '::',
+																	_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+																		_terezka$elm_plot$Plot_Label$format(
+																			function (_p12) {
+																				var _p13 = _p12;
+																				return _terezka$elm_plot$PlotComposed$isOdd(_p13.index) ? '' : A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(_p13.value),
+																					' t');
+																			})),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
@@ -13469,24 +13422,21 @@ var _terezka$elm_plot$PlotTicks$view = A2(
 							}),
 						_1: {
 							ctor: '::',
-							_0: _terezka$elm_plot$Plot_Axis$label(
-								{
-									ctor: '::',
-									_0: _terezka$elm_plot$Plot_Label$format(
-										function (_p4) {
-											var _p5 = _p4;
-											return _terezka$elm_plot$PlotTicks$isOdd(_p5.index) ? '' : A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p5.value),
-												' s');
-										}),
-									_1: {
-										ctor: '::',
-										_0: _terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotTicks$toLabelStyle),
-										_1: {ctor: '[]'}
-									}
-								}),
-							_1: {ctor: '[]'}
+							_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+								_terezka$elm_plot$Plot_Label$format(
+									function (_p4) {
+										var _p5 = _p4;
+										return _terezka$elm_plot$PlotTicks$isOdd(_p5.index) ? '' : A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p5.value),
+											' s');
+									})),
+							_1: {
+								ctor: '::',
+								_0: _terezka$elm_plot$Plot_Axis$labelView(
+									_terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotTicks$toLabelStyle)),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}),
@@ -13532,10 +13482,22 @@ var _terezka$elm_plot$PlotBars$view = A2(
 					_0: _terezka$elm_plot$Plot_Bars$stackByY,
 					_1: {
 						ctor: '::',
-						_0: _terezka$elm_plot$Plot_Bars$label(
-							{
-								ctor: '::',
-								_0: _terezka$elm_plot$Plot_Label$formatFromList(
+						_0: _terezka$elm_plot$Plot_Bars$labelView(
+							_terezka$elm_plot$Plot_Label$view(
+								{
+									ctor: '::',
+									_0: _terezka$elm_plot$Plot_Label$displace(
+										{ctor: '_Tuple2', _0: 0, _1: 13}),
+									_1: {
+										ctor: '::',
+										_0: _terezka$elm_plot$Plot_Label$fontSize(10),
+										_1: {ctor: '[]'}
+									}
+								})),
+						_1: {
+							ctor: '::',
+							_0: _terezka$elm_plot$Plot_Bars$labelFormat(
+								_terezka$elm_plot$Plot_Label$formatFromList(
 									{
 										ctor: '::',
 										_0: 'A',
@@ -13548,24 +13510,9 @@ var _terezka$elm_plot$PlotBars$view = A2(
 												_1: {ctor: '[]'}
 											}
 										}
-									}),
-								_1: {
-									ctor: '::',
-									_0: _terezka$elm_plot$Plot_Label$view(
-										{
-											ctor: '::',
-											_0: _terezka$elm_plot$Plot_Label$displace(
-												{ctor: '_Tuple2', _0: 0, _1: 13}),
-											_1: {
-												ctor: '::',
-												_0: _terezka$elm_plot$Plot_Label$fontSize(10),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
+									})),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			},
@@ -13853,19 +13800,15 @@ var _terezka$elm_plot$PlotSticky$view = A2(
 							}),
 						_1: {
 							ctor: '::',
-							_0: _terezka$elm_plot$Plot_Axis$label(
-								{
-									ctor: '::',
-									_0: _terezka$elm_plot$Plot_Label$format(
-										function (_p2) {
-											var _p3 = _p2;
-											return A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p3.value),
-												' ms');
-										}),
-									_1: {ctor: '[]'}
-								}),
+							_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+								_terezka$elm_plot$Plot_Label$format(
+									function (_p2) {
+										var _p3 = _p2;
+										return A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p3.value),
+											' ms');
+									})),
 							_1: {
 								ctor: '::',
 								_0: _terezka$elm_plot$Plot_Axis$cleanCrossings,
@@ -13893,24 +13836,21 @@ var _terezka$elm_plot$PlotSticky$view = A2(
 									}),
 								_1: {
 									ctor: '::',
-									_0: _terezka$elm_plot$Plot_Axis$label(
-										{
-											ctor: '::',
-											_0: _terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotSticky$toLabelAttrsY),
-											_1: {
-												ctor: '::',
-												_0: _terezka$elm_plot$Plot_Label$format(
-													function (_p4) {
-														var _p5 = _p4;
-														return (!_terezka$elm_plot$PlotSticky$isOdd(_p5.index)) ? '' : A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p5.value * 10),
-															' x');
-													}),
-												_1: {ctor: '[]'}
-											}
-										}),
-									_1: {ctor: '[]'}
+									_0: _terezka$elm_plot$Plot_Axis$labelView(
+										_terezka$elm_plot$Plot_Label$viewDynamic(_terezka$elm_plot$PlotSticky$toLabelAttrsY)),
+									_1: {
+										ctor: '::',
+										_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+											_terezka$elm_plot$Plot_Label$format(
+												function (_p4) {
+													var _p5 = _p4;
+													return (!_terezka$elm_plot$PlotSticky$isOdd(_p5.index)) ? '' : A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(_p5.value * 10),
+														' x');
+												})),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
@@ -13929,19 +13869,15 @@ var _terezka$elm_plot$PlotSticky$view = A2(
 									_0: _terezka$elm_plot$Plot_Axis$anchorInside,
 									_1: {
 										ctor: '::',
-										_0: _terezka$elm_plot$Plot_Axis$label(
-											{
-												ctor: '::',
-												_0: _terezka$elm_plot$Plot_Label$format(
-													function (_p6) {
-														var _p7 = _p6;
-														return _terezka$elm_plot$PlotSticky$isOdd(_p7.index) ? '' : A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p7.value / 5),
-															'k');
-													}),
-												_1: {ctor: '[]'}
-											}),
+										_0: _terezka$elm_plot$Plot_Axis$labelFormat(
+											_terezka$elm_plot$Plot_Label$format(
+												function (_p6) {
+													var _p7 = _p6;
+													return _terezka$elm_plot$PlotSticky$isOdd(_p7.index) ? '' : A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(_p7.value / 5),
+														'k');
+												})),
 										_1: {ctor: '[]'}
 									}
 								}

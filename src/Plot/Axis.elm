@@ -10,13 +10,12 @@ module Plot.Axis exposing (..)
 @docs classes, line, positionLowest, positionHighest, cleanCrossings, anchorInside
 
 ## Ticks and labels
-@docs LabelInfo, tick, tickValues, tickDelta, label, labelValues
+@docs LabelInfo, tick, tickValues, tickDelta, labelView, labelFormat, labelValues
 
 -}
 
 import Internal.Types exposing (Style, Orientation(..), Anchor(..), Value)
 import Internal.Axis as Internal exposing (ValueConfig(..))
-import Internal.Label as LabelInternal
 import Internal.Tick as TickInternal
 import Internal.Line as LineInternal
 import Plot.Line as Line
@@ -151,9 +150,15 @@ tick attributes config =
                 ]
             ]
 -}
-label : List (Label.Attribute LabelInfo msg) -> Attribute msg
-label attributes config =
-    { config | labelConfig = List.foldl (<|) LabelInternal.defaultConfig attributes }
+labelView : Label.ViewConfig LabelInfo msg -> Attribute msg
+labelView view config =
+    { config | labelView = view }
+
+
+{-| -}
+labelFormat : Label.FormatConfig LabelInfo -> Attribute msg
+labelFormat formatter config =
+    { config | labelFormat = formatter }
 
 
 {-| Specify the values which you want a label for. If not specified, it will mirror
